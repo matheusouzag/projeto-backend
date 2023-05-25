@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int        @id @default(autoincrement())
+  email    String     @unique @db.VarChar(45)
+  senha    String     @db.VarChar(45)
+  role     Boolean
+  perfil   Perfil     @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+  perfilId Int        @unique
+  postagem Postagem[]
+}
+
+model Perfil {
+  id         Int     @id @default(autoincrement())
+  nome       String  @db.VarChar(45)
+  telefone   String  @db.VarChar(45)
+  nascimento String
+  bio        String? @db.VarChar(255)
+  fotoPerfil String?
+  usuario    User?
+}
+
+model Postagem {
+  id        Int         @id @default(autoincrement())
+  titulo    String      @db.VarChar(255)
+  conteudo  String
+  usuarioId Int
+  usuario   User        @relation(fields: [usuarioId], references: [id])
+  categoria Categoria[]
+}
+
+model Categoria {
+  id       Int        @id @default(autoincrement())
+  nome     String     @db.VarChar(100)
+  postagem Postagem[]
+}
